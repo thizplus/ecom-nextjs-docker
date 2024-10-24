@@ -1,18 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   basePath: process.env.BASEPATH,
-  reactStrictMode: false,
-  output: 'standalone',
-  webpack: config => {
-    config.module.rules.push({
-      test: /\.(ts|tsx)$/,
-      resolve: {
-        fullySpecified: false
-      }
-    })
 
-    return config
-  }
+  // TODO: below line is added to resolve twice event dispatch in the calendar reducer
+  reactStrictMode: false
 }
 
 module.exports = nextConfig
