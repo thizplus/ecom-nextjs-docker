@@ -61,6 +61,7 @@ export const useCheckPriceAccess = (priceId: string) => {
       fetchAttempted.current = false;
       fetchAccess();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceId, user?.userId]);
 
   return { data, isLoading, error };

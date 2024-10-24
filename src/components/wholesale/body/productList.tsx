@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 
 import type { Socket } from 'socket.io-client';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 import type { SelectChangeEvent } from '@mui/material';
 import { Pagination, TextField, Select, MenuItem } from '@mui/material';
 

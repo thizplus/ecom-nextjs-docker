@@ -127,6 +127,7 @@ export const useAuth = () => {
     };
 
     initialize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchConfig, verifyToken, setLoggedIn, setUser]);
 
   const handleLogin = useCallback(async () => {

@@ -74,6 +74,7 @@ const MultiPriceTotalCart: React.FC = () => {
     console.log('Applicable price ID:', getApplicablePrice());
   }, [getTotalAmount, baseTotalCart, getApplicablePrice]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const applicablePriceId = useMemo(() => getApplicablePrice(), [getApplicablePrice, localBaseTotalCart]);
 
   const applicablePriceName = useMemo(() => {

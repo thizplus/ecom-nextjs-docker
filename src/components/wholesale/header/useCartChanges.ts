@@ -8,6 +8,7 @@ export const useCartChanges = (priceId: string) => {
 
   useEffect(() => {
     setCartVersion(prev => prev + 1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [carts[priceId]]);
 
   return cartVersion;

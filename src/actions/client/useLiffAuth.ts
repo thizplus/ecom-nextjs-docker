@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-import liff from '@line/liff';
+import { liff } from '@line/liff';
 
 import { useConfigStore } from '@/stores/configStore';
 import { useClientStores } from '@/stores/authStore';

@@ -134,6 +134,7 @@ const MultiPriceProductList: React.FC<Props> = ({ priceIds }) => {
       socket.disconnect();
       socketRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [priceIds]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {

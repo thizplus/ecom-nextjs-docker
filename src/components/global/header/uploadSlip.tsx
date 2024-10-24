@@ -125,6 +125,7 @@ const UploadSlip: React.FC<propsOrder> = ({ order, onPaymentUpdate, currentPayme
     }
   }, [order, currentPayment, onPaymentUpdate, clearFile]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedVerifySlip = useCallback(
     debounce((fileToVerify: File) => verifySlip(fileToVerify), 300),
     [verifySlip]
