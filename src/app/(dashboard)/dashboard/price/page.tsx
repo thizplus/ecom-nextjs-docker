@@ -6,8 +6,8 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
 import BtnCreatePrice from "@/components/dashboard/price/btnCreatePrice";
-import type { Column } from "@/components/global/EnhancedTable";
-import EnhancedTable from "@/components/global/EnhancedTable";
+import type { Column } from "../../../../components/global/EnhancedTable";
+import EnhancedTable from "../../../../components/global/EnhancedTable";
 import usePriceAll from "@/actions/backend/price/usePriceAll";
 import usePriceSearch from '@/actions/backend/price/usePriceSearch';
 import type { TypePrice } from "@/types/priceTypes";

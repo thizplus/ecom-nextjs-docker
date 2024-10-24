@@ -10,8 +10,8 @@ import Divider from '@mui/material/Divider';
 import { Box } from '@mui/material';
 
 import BtnImport from "@/components/dashboard/products/btnImport";
-import type { Column } from "@/components/global/EnhancedTable";
-import EnhancedTable from "@/components/global/EnhancedTable";
+import type { Column } from "../../../../components/global/EnhancedTable";
+import EnhancedTable from "../../../../components/global/EnhancedTable";
 import useProductAll from "@/actions/backend/products/useProductAll";
 import useProductSearch from '@/actions/backend/products/useProductSearch';
 import type { TypesProduct } from "@/types/productTypes";

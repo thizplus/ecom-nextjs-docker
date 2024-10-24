@@ -5,8 +5,8 @@ import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
-import type { Column } from "@/components/global/EnhancedTable";
-import EnhancedTable from "@/components/global/EnhancedTable";
+import type { Column } from "../../../../components/global/EnhancedTable";
+import EnhancedTable from "../../../../components/global/EnhancedTable";
 import useProductsByPriceId from "@/actions/backend/price/inner/useProductsByPriceId";
 import useProductSearchByPriceId from '@/actions/backend/price/inner/useProductSearchByPriceId';
 import type { TypesProductInner } from '@/types/productTypes';
