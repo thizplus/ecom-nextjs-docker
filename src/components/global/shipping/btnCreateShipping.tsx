@@ -1,0 +1,186 @@
+import React, { useState } from 'react';
+
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+
+import { addShippingAddress } from '@/actions/client/shipping';
+
+interface BtnCreateShippingProps {
+  onAddressAdded: () => void;
+}
+
+const BtnCreateShipping: React.FC<BtnCreateShippingProps> = ({ onAddressAdded }) => {
+  const [open, setOpen] = useState<boolean>(false);
+
+  const [newAddress, setNewAddress] = useState({
+    cusName: '',
+    cusTel: '',
+    addressNo: '',
+    district: '',
+    amphoe: '',
+    province: '',
+    zipcode: ''
+  });
+
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    setNewAddress(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCreateShipping = async () => {
+    // ตรวจสอบว่ากรอกครบเมื่อกดปุ่ม "เพิ่มที่อยู่"
+    if (
+      newAddress.cusName.trim() === '' ||
+      newAddress.cusTel.trim() === '' ||
+      newAddress.addressNo.trim() === '' ||
+      newAddress.district.trim() === '' ||
+      newAddress.amphoe.trim() === '' ||
+      newAddress.province.trim() === '' ||
+      newAddress.zipcode.trim() === ''
+    ) {
+      alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+
+      return;
+    }
+
+    try {
+      await addShippingAddress(newAddress);
+      onAddressAdded();
+      handleClose();
+    } catch (error) {
+      console.error('Error adding shipping address:', error);
+    }
+  };
+
+  return (
+    <>
+      <p className="underline cursor-pointer flex" onClick={handleClickOpen}>
+        <i className='tabler-plus' /> เพิ่มที่อยู่ใหม่
+      </p>
+
+      <Dialog
+        open={open}
+        maxWidth='xs'
+        fullWidth
+        disableEscapeKeyDown
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+        onClose={(event, reason) => {
+          if (reason !== 'backdropClick') {
+            handleClose();
+          }
+        }}
+      >
+        <DialogTitle id='alert-dialog-title'>เพิ่มที่อยู่จัดส่งใหม่</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="cusName"
+            label="ชื่อผู้รับ"
+            type="text"
+            fullWidth
+            variant="outlined"
+            size='small'
+            value={newAddress.cusName}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            name="cusTel"
+            label="เบอร์โทรศัพท์"
+            type="tel"
+            fullWidth
+            variant="outlined"
+            size='small'
+            value={newAddress.cusTel}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            name="addressNo"
+            label="เลขที่/หมู่บ้าน"
+            type="text"
+            fullWidth
+            variant="outlined"
+            size='small'
+            value={newAddress.addressNo}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            name="district"
+            label="ตำบล/แขวง"
+            type="text"
+            fullWidth
+            variant="outlined"
+            size='small'
+            value={newAddress.district}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            name="amphoe"
+            label="อำเภอ/เขต"
+            type="text"
+            fullWidth
+            variant="outlined"
+            size='small'
+            value={newAddress.amphoe}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            name="province"
+            label="จังหวัด"
+            type="text"
+            fullWidth
+            variant="outlined"
+            size='small'
+            value={newAddress.province}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            name="zipcode"
+            label="รหัสไปรษณีย์"
+            type="text"
+            fullWidth
+            variant="outlined"
+            size='small'
+            value={newAddress.zipcode}
+            onChange={handleInputChange}
+          />
+        </DialogContent>
+        <DialogActions className='dialog-actions-dense'>
+          <Button
+            onClick={handleCreateShipping}
+            variant='contained'
+            disabled={
+              newAddress.cusName.trim() === '' ||
+              newAddress.cusTel.trim() === '' ||
+              newAddress.addressNo.trim() === '' ||
+              newAddress.district.trim() === '' ||
+              newAddress.amphoe.trim() === '' ||
+              newAddress.province.trim() === '' ||
+              newAddress.zipcode.trim() === ''
+            }
+          >
+            เพิ่มที่อยู่
+          </Button>
+          <Button onClick={handleClose}>ยกเลิก</Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
+
+export default BtnCreateShipping;
