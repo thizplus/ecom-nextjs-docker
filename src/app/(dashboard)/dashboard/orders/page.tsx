@@ -8,8 +8,8 @@ import TextField from '@mui/material/TextField';
 
 import type { Column } from "../../../../components/global/EnhancedTable";
 import EnhancedTable from "../../../../components/global/EnhancedTable";
-import useOrdersAll from '@/actions/backend/orders/useOrdersAll';
-import useOrdersSearch from '@/actions/backend/orders/useOrdersSearch';
+import useOrdersAll from '../.././/../../actions/backend/orders/useOrdersAll';
+import useOrdersSearch from '../.././/../../actions/backend/orders/useOrdersSearch';
 import type { TypeOrder } from "@/types/orderTypes";
 import { formatNumber } from '@/components/global/functions/numberFormat';
 import DialogOrderDetail from '@/components/dashboard/order/dialogOrderDetail';

@@ -13,9 +13,9 @@ import EnhancedTable from "../../../../components/global/EnhancedTable";
 
 
 import useCategoryAll from '@/actions/backend/category/useCategoryAll';
-import useCategorySearch from '@/actions/backend/category/useCategorySearch';
+import useCategorySearch from '../../../../actions/backend/category/useCategorySearch';
 import type { TypesCategory } from "@/types/categoryTypes";
-import StatusSwitch from '@/components/dashboard/category/StatusSwitch';
+import StatusSwitch from '../../../../components/dashboard/category/StatusSwitch';
 
 
 const columns: Column<TypesCategory>[] = [
