@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic'
 
 import { useClientStores } from '@/stores/authStore'
 
@@ -6,9 +5,7 @@ import { useClientStores } from '@/stores/authStore'
 import MyOrders from '../../global/header/myOrders'
 import TotalCart from './totalCart'
 
-const BtnLineLogin = dynamic(() => import('@/components/global/header/btnLogin'), {
-  ssr: false,
-})
+
 
 type propsPriceInfo = {
   priceId: string
@@ -38,11 +35,9 @@ const MainHeader = ({ priceId, priceName }: propsPriceInfo) => {
             </div>
           </div>
 
-          {isLoggedIn ? (
+          {isLoggedIn &&
             <TotalCart priceId={priceId} />
-          ) : (
-            <BtnLineLogin />
-          )}
+          }
         </div>
       </div>
       <div className="h-[80px]"></div>

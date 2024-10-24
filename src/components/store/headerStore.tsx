@@ -1,7 +1,6 @@
 // HeaderStore.tsx
 import React, { useEffect, useState } from 'react';
 
-import dynamic from 'next/dynamic';
 
 import { useClientStores } from '@/stores/authStore';
 import MyOrders from '../global/header/myOrders';
@@ -9,9 +8,7 @@ import { useLiffAuth } from '@/actions/client/useLiffAuth';
 import MultiPriceTotalCart from './MultiPriceTotalCart';
 import { useConfigStore } from '@/stores/configStore';
 
-const BtnLineLogin = dynamic(() => import('@/components/global/header/btnLogin'), {
-  ssr: false,
-});
+
 
 const HeaderStore = () => {
   const { user, isLoggedIn } = useClientStores();
@@ -62,11 +59,9 @@ const HeaderStore = () => {
             </div>
           </div>
 
-          {isLoggedIn ? (
+          {isLoggedIn &&
             <MultiPriceTotalCart />
-          ) : (
-            <BtnLineLogin />
-          )}
+          }
         </div>
       </div>
       <div className="h-[80px]"></div>
