@@ -8,8 +8,8 @@ import TextField from '@mui/material/TextField';
 
 import { Box } from '@mui/material';
 
-import type { Column } from "@/components/global/tableData";
-import EnhancedTable from "@/components/global/tableData";
+import type { Column } from "@/components/global/EnhancedTable";
+import EnhancedTable from "@/components/global/EnhancedTable";
 import useCategoryAll from '@/actions/backend/category/useCategoryAll';
 import useCategorySearch from '@/actions/backend/category/useCategorySearch';
 import type { TypesCategory } from "@/types/categoryTypes";
