@@ -12,6 +12,8 @@ const MainStore = () => {
   const { isLiffLoading, liffError } = useLiffAuth(); // Using new LIFF hook
   const { config, fetchConfig, loading: configLoading } = useConfigStore();
 
+
+
   // Initialize LIFF and fetch config
   useEffect(() => {
     if (!config) {

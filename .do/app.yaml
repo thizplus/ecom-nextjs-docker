@@ -6,7 +6,7 @@ services:
     source_dir: /
     git:
       branch: main
-      repo_clone_url: https://github.com/YOUR_USERNAME/YOUR_REPO.git
+      repo_clone_url: https://github.com/git-wppluz/ecom-nextjs-docker.git
     health_check:
       http_path: /
     instance_count: 1

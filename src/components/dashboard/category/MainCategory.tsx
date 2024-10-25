@@ -49,6 +49,14 @@ const MainCategory = () => {
     = useCategorySearch(effectiveSearchQuery, page + 1, rowsPerPage);
 
   useEffect(() => {
+    console.log('Environment variables:', {
+      SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,
+      APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+      SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME
+    });
+  }, []);
+
+  useEffect(() => {
     if (!isSearching) {
       setEffectiveSearchQuery('');
     }
