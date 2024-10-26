@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 
-import type { TypeClient } from "@/types/clientTypes";
+import type { TypeClientVerify } from "@/types/clientTypes";
 
 export const setToken = (token: string): void => {
   localStorage.setItem('token', token);
@@ -14,9 +14,9 @@ export const removeToken = (): void => {
   localStorage.removeItem('token');
 };
 
-export const decodeToken = (token: string): TypeClient | null => {
+export const decodeToken = (token: string): TypeClientVerify | null => {
   try {
-    const decoded = jwtDecode<TypeClient>(token);
+    const decoded = jwtDecode<TypeClientVerify>(token);
 
     console.log('Decoded token:', decoded);
 
@@ -34,7 +34,7 @@ export const decodeToken = (token: string): TypeClient | null => {
   }
 };
 
-export const getUserData = (): TypeClient | null => {
+export const getUserData = (): TypeClientVerify | null => {
   const token = getToken();
 
   if (token) {

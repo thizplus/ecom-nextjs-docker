@@ -16,6 +16,16 @@ export interface TypeClient {
   idType: string;
   shippingAddresses?: ShippingAddress[];
   accessiblePrices?: AccessiblePrice[]; // เพิ่ม field นี้
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+
+export interface TypeClientVerify {
+  userId: string;
+  displayName: string;
+  pictureUrl: string;
+  userType: string;
+  idType: string;
+  shippingAddresses?: ShippingAddress[]
 }

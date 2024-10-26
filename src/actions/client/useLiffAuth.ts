@@ -4,7 +4,7 @@ import { liff } from '@line/liff';
 
 import { useConfigStore } from '@/stores/configStore';
 import { useClientStores } from '@/stores/authStore';
-import type { TypeClient } from '@/types/clientTypes';
+import type { TypeClientVerify } from '@/types/clientTypes';
 
 export const useLiffAuth = (priceId?: string) => {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -66,7 +66,7 @@ export const useLiffAuth = (priceId?: string) => {
         }
 
         // สร้าง user profile ตาม context
-        const userProfile: TypeClient = {
+        const userProfile: TypeClientVerify = {
           userId: profile.userId,
           displayName: profile.displayName,
           pictureUrl: profile.pictureUrl || '',
