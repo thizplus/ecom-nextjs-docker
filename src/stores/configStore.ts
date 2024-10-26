@@ -22,6 +22,7 @@ interface SlipOK {
   API_URL: string;
   API_KEY: string;
   ENABLED: boolean;
+  qr_image?: string;
 }
 
 interface ShippingCost {

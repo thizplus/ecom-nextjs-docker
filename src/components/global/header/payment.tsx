@@ -15,12 +15,13 @@ import BtnVoidOrder from './voidOrder';
 
 interface PaymentProps {
   paymentData: TypeOrder;
+  qr: string | undefined;
   onClose: () => void;
   onOpen: boolean;
   onUpdatePayment: (updatedPayment: TypeOrder['payment']) => void;
 }
 
-const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdatePayment }) => {
+const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdatePayment, qr }) => {
   const [isFullyPaid, setIsFullyPaid] = useState(false);
   const [currentPayment, setCurrentPayment] = useState(paymentData.payment);
 
@@ -70,6 +71,8 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
       <DialogContent>
         <div className='block'>
 
+
+
           <div className='grid grid-cols-2'>
             <p>หมายเลขคำสั่งซื้อ:</p><p className='text-right font-bold'>{paymentData.orderId}</p>
             <p color={isFullyPaid ? 'success.main' : 'warning.main'}>
@@ -102,6 +105,13 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
             currentPayment={currentPayment}
           />
         )}
+
+        {qr &&
+          <div className='mb-2'>
+            <p className='text-center'>กรุณาชำระเงินที่บัญชีด้านล่างและแนบสลิป</p>
+            <img src={qr} alt='' className=' w-full' />
+          </div>
+        }
 
         {isFullyPaid && (
           <Alert severity='success' className='mt-4'>การชำระเงินของคุณเสร็จสมบูรณ์</Alert>

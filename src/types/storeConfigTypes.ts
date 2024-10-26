@@ -18,6 +18,7 @@ export interface SlipOKConfig {
   API_URL: string;
   API_KEY: string;
   ENABLED: boolean;
+  qr_image?: string;
 }
 
 // Type for each item in the listPrice array

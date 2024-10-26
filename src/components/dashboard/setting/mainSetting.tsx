@@ -29,6 +29,7 @@ import type { StoreConfig, ListPrice, LineNotificationConfig, SlipOKConfig, Line
 import actionUpdateConfig from '@/actions/backend/setting/updateStoreConfig'
 import { formatNumber } from '@/components/global/functions/numberFormat'
 import type { TypePrice } from '@/types/priceTypes'
+import FileUpload from './fileUpload'
 
 const MainSetting = () => {
   const queryClient = useQueryClient();
@@ -37,6 +38,7 @@ const MainSetting = () => {
   const { data: priceData, status: priceStatus, error: priceError } = usePriceAll(1, 100);
   const [config, setConfig] = useState<StoreConfig | undefined>(undefined);
   const [isProcess, setIsProcess] = useState<boolean>(false);
+  const [qrFile, setQrFile] = useState<File | null>(null);
 
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
@@ -118,11 +120,15 @@ const MainSetting = () => {
     };
 
     try {
-      await actionUpdateConfig({ config: updatedConfig });
+      await actionUpdateConfig({ config: updatedConfig, qrFile });
       setSnackbar({ open: true, message: 'Configuration updated successfully', severity: 'success' });
       queryClient.invalidateQueries({ queryKey: ['StoreConfig'] });
     } catch (error) {
-      setSnackbar({ open: true, message: error instanceof Error ? error.message : 'Failed to update configuration', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: error instanceof Error ? error.message : 'Failed to update configuration',
+        severity: 'error'
+      });
     } finally {
       setIsProcess(false);
     }
@@ -257,7 +263,6 @@ const MainSetting = () => {
           />
 
 
-
         </TabPanel>
 
         {/* Line Notification */}
@@ -334,6 +339,15 @@ const MainSetting = () => {
             label="เปิดใช้งาน Slip OK API"
             className='mb-4'
           />
+
+          <div className="mb-4">
+            <Typography variant="subtitle2" className='mb-2'>QR Code Image</Typography>
+            <FileUpload
+              onFileSelected={setQrFile}
+              currentImageUrl={config.slipOK?.qr_image}
+            />
+          </div>
+
           <TextField
             label="API URL"
             variant="outlined"

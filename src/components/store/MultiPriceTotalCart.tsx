@@ -256,6 +256,8 @@ const MultiPriceTotalCart: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+
+
   return (
     <>
       <div className='flex gap-2'>
@@ -380,6 +382,7 @@ const MultiPriceTotalCart: React.FC = () => {
       {payment && (
         <Payment
           paymentData={payment}
+          qr={config?.slipOK.qr_image}
           onClose={handleCancelOrder}
           onOpen={true}
           onUpdatePayment={handleUpdatePayment}

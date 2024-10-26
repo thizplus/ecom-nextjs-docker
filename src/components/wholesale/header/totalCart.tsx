@@ -39,6 +39,8 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
   const [payment, setPayment] = useState<TypeOrder | undefined>(undefined);
   const { updateCartPrices } = usePriceUpdate(priceId);
 
+
+
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
     open: false,
     message: '',
@@ -227,6 +229,8 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+
+
   return (
     <>
       <div className='flex gap-2'>
@@ -344,6 +348,7 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
       {payment && (
         <Payment
           paymentData={payment}
+          qr={config?.slipOK.qr_image}
           onClose={handleCancelOrder}
           onOpen={true}
           onUpdatePayment={handleUpdatePayment}
