@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 import actionSearchPrice from '@/actions/backend/price/searchPrice';
 import ProductList from './body/productList';
@@ -10,6 +10,11 @@ import NotFoundPage from '../global/notFound';
 import { useCheckPriceAccess } from '@/actions/backend/price/useCheckPriceAccess';
 import AccessDenied from '../global/AccessDenied';
 import { useLiffAuth } from '@/actions/client/useLiffAuth';
+
+import { useConfigStore } from '@/stores/configStore';
+import Payment from '../global/header/payment';
+import type { TypeOrder } from "@/types/orderTypes";
+import { usePendingOrders } from '@/actions/backend/orders/usePendingOrders';
 
 type PropsPriceId = {
   priceId: string;
@@ -27,21 +32,23 @@ const MainWholesale: React.FC<PropsPriceId> = ({ priceId }) => {
   const [priceError, setPriceError] = useState<string | null>(null);
   const fetchAttempted = useRef(false);
 
+  // Payment dialog state
+  const [showPayment, setShowPayment] = useState(false);
+
   const { user, isLiffLoading, liffError } = useLiffAuth(priceId);
   const { data: accessData, isLoading: isAccessLoading, error: accessError } = useCheckPriceAccess(priceId);
+  const { config, loading: configLoading } = useConfigStore();
 
-  console.log('MainWholesale render:', {
-    priceId,
-    isLiffLoading,
-    liffError,
-    userExists: !!user
-  });
-
+  // Use pending orders hook
+  const {
+    pendingOrder,
+    isLoading: isPendingOrderLoading,
+    refreshPendingOrders
+  } = usePendingOrders(user?.userId, !!user);
 
   useEffect(() => {
     const fetchPriceData = async () => {
       if (fetchAttempted.current) return;
-
       fetchAttempted.current = true;
 
       try {
@@ -58,7 +65,27 @@ const MainWholesale: React.FC<PropsPriceId> = ({ priceId }) => {
     fetchPriceData();
   }, [priceId]);
 
-  const isLoading = isPriceLoading || isLiffLoading || isAccessLoading;
+  // Show payment dialog if there's a pending order
+  useEffect(() => {
+    if (pendingOrder && user) {
+      setShowPayment(true);
+    }
+  }, [pendingOrder, user]);
+
+  // Handle payment dialog close
+  const handlePaymentClose = useCallback(() => {
+    setShowPayment(false);
+    refreshPendingOrders();
+  }, [refreshPendingOrders]);
+
+  // Handle payment update
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handlePaymentUpdate = useCallback((updatedPayment: TypeOrder['payment']) => {
+    refreshPendingOrders();
+  }, [refreshPendingOrders]);
+
+  // Combined loading state
+  const isLoading = isPriceLoading || isLiffLoading || isAccessLoading || isPendingOrderLoading || configLoading;
 
   if (isLoading) return <Loading />;
   if (liffError) return <div>เกิดข้อผิดพลาดในการเข้าสู่ระบบ: {liffError}</div>;
@@ -69,7 +96,6 @@ const MainWholesale: React.FC<PropsPriceId> = ({ priceId }) => {
 
   return (
     <>
-
       <MainHeader
         priceId={priceId}
         priceName={priceData.items[0].name}
@@ -77,6 +103,16 @@ const MainWholesale: React.FC<PropsPriceId> = ({ priceId }) => {
 
       <ProductList priceId={priceId} />
 
+      {/* Show Payment dialog for pending order */}
+      {pendingOrder && showPayment && (
+        <Payment
+          paymentData={pendingOrder}
+          qr={config?.slipOK.qr_image}
+          onClose={handlePaymentClose}
+          onOpen={showPayment}
+          onUpdatePayment={handlePaymentUpdate}
+        />
+      )}
     </>
   );
 };
