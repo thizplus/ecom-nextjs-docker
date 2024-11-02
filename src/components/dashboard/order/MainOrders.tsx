@@ -15,6 +15,7 @@ import { formatNumber } from '@/components/global/functions/numberFormat';
 import DialogOrderDetail from '@/components/dashboard/order/dialogOrderDetail';
 import StatusLabel from '@/components/global/statusLabel';
 import formatThaiDateTime from '@/components/global/functions/formatThaiDateTime';
+import DialogSlipManual from './dialogSlipManual';
 
 const columns: Column<TypeOrder>[] = [
   {
@@ -31,10 +32,10 @@ const columns: Column<TypeOrder>[] = [
     format: (value) => value.cusName
   },
   {
-    id: 'totalAmount',
+    id: 'netTotal',
     numeric: true,
     disablePadding: false,
-    label: 'ยอดสั่งซื้อ',
+    label: 'ยอดชำระ',
     format: (value: number) => formatNumber(value)
   },
   {
@@ -110,7 +111,10 @@ const MainOrders = () => {
   };
 
   const renderActions = (row: TypeOrder) => (
-    <DialogOrderDetail order={row} />
+    <div className='flex gap-2'>
+      <DialogOrderDetail order={row} />
+      <DialogSlipManual order={row} />
+    </div>
   );
 
   const isLoading = isSearching ? isLoadingSearch : isLoadingAll;

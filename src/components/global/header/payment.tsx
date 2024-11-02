@@ -109,6 +109,7 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
         {qr &&
           <div className='mb-2'>
             <p className='text-center'>กรุณาชำระเงินที่บัญชีด้านล่างและแนบสลิป</p>
+            <p className='text-center text-sm text-error'>หากสลิปของคุณไม่มี QR CODE ระบบจะไม่สามารถตรวจสอบยอดได้ กรุณาส่งหลักฐานให้แอดมินยืนยันในแชท</p>
             <img src={qr} alt='' className=' w-full' />
           </div>
         }
