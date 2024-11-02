@@ -44,7 +44,11 @@ const MainWholesale: React.FC<PropsPriceId> = ({ priceId }) => {
     pendingOrder,
     isLoading: isPendingOrderLoading,
     refreshPendingOrders
-  } = usePendingOrders(user?.userId, !!user);
+  } = usePendingOrders({
+    userId: user?.userId,
+    typeId: priceId,
+    isLoggedIn: !!user
+  });
 
   useEffect(() => {
     const fetchPriceData = async () => {

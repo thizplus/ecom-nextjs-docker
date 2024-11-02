@@ -25,7 +25,12 @@ const MainStore = () => {
     pendingOrder,
     isLoading: isPendingOrderLoading,
     refreshPendingOrders
-  } = usePendingOrders(user?.userId, isLoggedIn);
+  } = usePendingOrders({
+    userId: user?.userId,
+    typeId: 'store', // กำหนด typeId เป็น 'store'
+    isLoggedIn: !!user
+  });
+
 
   // Initialize LIFF and fetch config
   useEffect(() => {

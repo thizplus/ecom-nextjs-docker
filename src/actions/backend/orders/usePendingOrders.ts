@@ -9,13 +9,19 @@ interface UsePendingOrdersReturn {
   refreshPendingOrders: () => Promise<void>;
 }
 
-export const usePendingOrders = (userId: string | undefined, isLoggedIn: boolean): UsePendingOrdersReturn => {
+interface UsePendingOrdersProps {
+  userId: string | undefined;
+  typeId: string;
+  isLoggedIn: boolean;
+}
+
+export const usePendingOrders = ({ userId, typeId, isLoggedIn }: UsePendingOrdersProps): UsePendingOrdersReturn => {
   const [pendingOrder, setPendingOrder] = useState<TypeOrder | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchPendingOrders = useCallback(async () => {
-    if (!userId || !isLoggedIn) {
+    if (!userId || !isLoggedIn || !typeId) {
       setPendingOrder(null);
 
       return;
@@ -25,9 +31,8 @@ export const usePendingOrders = (userId: string | undefined, isLoggedIn: boolean
     setError(null);
 
     try {
-      // ใช้ API endpoint ใหม่
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/orders/pending/latest/${userId}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/orders/pending/latest/${userId}/${typeId}`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -48,9 +53,8 @@ export const usePendingOrders = (userId: string | undefined, isLoggedIn: boolean
     } finally {
       setIsLoading(false);
     }
-  }, [userId, isLoggedIn]);
+  }, [userId, typeId, isLoggedIn]);
 
-  // Fetch on mount and when dependencies change
   useEffect(() => {
     fetchPendingOrders();
   }, [fetchPendingOrders]);
