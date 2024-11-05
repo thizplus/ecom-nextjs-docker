@@ -23,6 +23,7 @@ import { sendOrderToZort } from '@/actions/zortout/actionZortout';
 import type { TypeOrder } from '@/types/orderTypes';
 import Payment from '../global/header/payment';
 import { useMultiPriceUpdate } from '@/actions/store/useMultiPriceUpdate';
+import { checkZortStock } from '@/actions/backend/orders/checkZortStock';
 
 const MultiPriceTotalCart: React.FC = () => {
   const {
@@ -166,6 +167,26 @@ const MultiPriceTotalCart: React.FC = () => {
     setIsProcess(true);
 
     try {
+      // Check Zort stock first
+      const stockCheck = await checkZortStock(
+        filteredItems.map(item => ({
+          sku: item.sku,
+          qty: item.qty
+        }))
+      );
+
+      if (!stockCheck.success) {
+        if (stockCheck.error) {
+          throw new Error(stockCheck.error);
+        }
+
+        const insufficientItemsMessage = stockCheck.insufficientItems
+          ?.map(item => `${item.name} (มีในสต็อก: ${item.available})`)
+          .join('\n');
+
+        throw new Error(`สินค้าคงเหลือไม่เพียงพอ:\n${insufficientItemsMessage}`);
+      }
+
       const now = new Date();
       const expire = new Date(now.getTime() + 15 * 60000); // +15 นาที
 
@@ -183,7 +204,7 @@ const MultiPriceTotalCart: React.FC = () => {
         })),
         shippingInfo: {
           _id: selectedAddress._id || 'default_id',
-          cusName: selectedAddress.cusName,      // เพิ่มฟิลด์ตาม ShippingInfo interface
+          cusName: selectedAddress.cusName,
           cusTel: selectedAddress.cusTel,
           addressNo: selectedAddress.addressNo,
           district: selectedAddress.district,
@@ -205,23 +226,19 @@ const MultiPriceTotalCart: React.FC = () => {
         }
       } as unknown as TypeOrder;
 
-      const createdOrder = await actionCreateOrder(orderData);
-
-      console.log('Created Order:', createdOrder);
+      actionCreateOrder(orderData);
 
       await sendLineNotification(orderData);
       await sendLineFlexMessage(orderData);
 
       const res = await sendOrderToZort(orderData);
 
-      console.log('sendOrderToZort: ', res);
-
       setSnackbar({ open: true, message: 'สร้างคำสั่งซื้อสำเร็จ', severity: 'success' });
       handleClose();
 
       setPayment(res.orderData);
-
       clearCart();
+
     } catch (error) {
       console.error('Failed to create order:', error);
       setSnackbar({
