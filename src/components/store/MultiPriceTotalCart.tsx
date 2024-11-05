@@ -45,6 +45,12 @@ const MultiPriceTotalCart: React.FC = () => {
   const [payment, setPayment] = useState<TypeOrder | undefined>(undefined);
   const [localTotalAmount, setLocalTotalAmount] = useState<number>(0);
   const [localBaseTotalCart, setLocalBaseTotalCart] = useState<number>(0);
+
+  const [insufficientStock, setInsufficientStock] = useState<Array<{
+    name: string;
+    available: number;
+  }> | null>(null);
+
   const { updateCartPrices } = useMultiPriceUpdate();
 
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
@@ -180,12 +186,21 @@ const MultiPriceTotalCart: React.FC = () => {
           throw new Error(stockCheck.error);
         }
 
-        const insufficientItemsMessage = stockCheck.insufficientItems
-          ?.map(item => `${item.name} (มีในสต็อก: ${item.available})`)
-          .join('\n');
+        // อัพเดต insufficientStock state เพื่อแสดง Alert
+        setInsufficientStock(
+          stockCheck.insufficientItems?.map(item => ({
+            name: item.name,
+            available: item.available
+          })) || null
+        );
 
-        throw new Error(`สินค้าคงเหลือไม่เพียงพอ:\n${insufficientItemsMessage}`);
+        setIsProcess(false);
+
+        return;
       }
+
+      // ถ้าสต็อกพอ เคลียร์ insufficientStock
+      setInsufficientStock(null);
 
       const now = new Date();
       const expire = new Date(now.getTime() + 15 * 60000); // +15 นาที
@@ -373,6 +388,18 @@ const MultiPriceTotalCart: React.FC = () => {
               <p>{formatNumber(totalWithShipping)}</p>
             </div>
           </div>
+
+          {insufficientStock && insufficientStock.length > 0 && (
+            <Alert severity="error" className="mt-2">
+              <div className="font-semibold">สินค้าคงเหลือไม่เพียงพอ:</div>
+              {insufficientStock.map((item, index) => (
+                <div key={index} className="text-sm">
+                  {item.name} (มีในสต็อก: {item.available})
+                </div>
+              ))}
+            </Alert>
+          )}
+
           {config?.saleModel.minOrderStatus && localTotalAmount < config.saleModel.minOrderValue && (
             <p className="text-red-500 mt-2 text-center underline">
               ยอดสั่งซื้อขั้นต่ำ {formatNumber(config.saleModel.minOrderValue)} บาท
