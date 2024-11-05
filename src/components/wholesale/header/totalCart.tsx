@@ -24,6 +24,7 @@ import { sendOrderToZort } from '@/actions/zortout/actionZortout';
 import type { TypeOrder } from '@/types/orderTypes';
 import Payment from '../../global/header/payment';
 import { usePriceUpdate } from '@/actions/wholesale/usePriceUpdate';
+import { checkZortStock } from '@/actions/backend/orders/checkZortStock';
 
 interface PropsTotalCart {
   priceId: string;
@@ -39,6 +40,10 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
   const [payment, setPayment] = useState<TypeOrder | undefined>(undefined);
   const { updateCartPrices } = usePriceUpdate(priceId);
 
+  const [insufficientStock, setInsufficientStock] = useState<Array<{
+    name: string;
+    available: number;
+  }> | null>(null);
 
 
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
@@ -130,6 +135,35 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
     setIsProcess(true);
 
     try {
+      // Check Zort stock first
+      const stockCheck = await checkZortStock(
+        filteredItems.map(item => ({
+          sku: item.sku,
+          qty: item.qty
+        }))
+      );
+
+      if (!stockCheck.success) {
+        if (stockCheck.error) {
+          throw new Error(stockCheck.error);
+        }
+
+        // อัพเดต insufficientStock state เพื่อแสดง Alert
+        setInsufficientStock(
+          stockCheck.insufficientItems?.map(item => ({
+            name: item.name,
+            available: item.available
+          })) || null
+        );
+
+        setIsProcess(false);
+
+        return;
+      }
+
+      // ถ้าสต็อกพอ เคลียร์ insufficientStock
+      setInsufficientStock(null);
+
       const now = new Date();
       const expire = new Date(now.getTime() + 15 * 60000); // +15 นาที
 
@@ -141,7 +175,7 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
         listProducts: filteredItems.map(item => ({
           sku: item.sku,
           name: item.name,
-          price: item.price,  // ใช้ price ปกติจาก wholesale
+          price: item.price,
           qty: item.qty,
           total: item.price * item.qty
         })),
@@ -169,13 +203,9 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
         }
       } as unknown as TypeOrder;
 
-
-
       const createdOrder = await actionCreateOrder(orderData);
 
       console.log('Created Order:', createdOrder);
-
-
 
       console.log('Order data:', orderData);
       await sendLineNotification(orderData);
@@ -189,8 +219,8 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
       handleClose();
 
       setPayment(res.orderData);
-
       useCartStore.getState().clearCart(priceId);
+
     } catch (error) {
       console.error('Failed to create order:', error);
       setSnackbar({
@@ -321,6 +351,18 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
               <p>{formatNumber(totalWithShipping)}</p>
             </div>
           </div>
+
+          {insufficientStock && insufficientStock.length > 0 && (
+            <Alert severity="error" className="mt-2">
+              <div className="font-semibold">สินค้าคงเหลือไม่เพียงพอ:</div>
+              {insufficientStock.map((item, index) => (
+                <div key={index} className="text-sm">
+                  {item.name} (มีในสต็อก: {item.available})
+                </div>
+              ))}
+            </Alert>
+          )}
+
           {config?.saleModel.minOrderStatus && getTotalAmount(priceId) < config.saleModel.minOrderValue && (
             <p className="text-red-500 mt-2 text-center underline">
               ยอดสั่งซื้อขั้นต่ำ {formatNumber(config.saleModel.minOrderValue)} บาท
