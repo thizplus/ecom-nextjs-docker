@@ -38,6 +38,14 @@ const columns: Column<TypeOrder>[] = [
     label: 'ยอดชำระ',
     format: (value: number) => formatNumber(value)
   },
+
+  {
+    id: 'payment',
+    numeric: true,
+    disablePadding: false,
+    label: 'ชำระแล้ว',
+    format: (value) => formatNumber(value.amount)
+  },
   {
     id: 'payment',
     numeric: false,
