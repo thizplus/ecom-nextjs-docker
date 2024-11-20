@@ -1,4 +1,6 @@
 function formatThaiDateTime(dateString: string): string {
+
+
   const date = new Date(dateString);
 
   const thaiMonths = [

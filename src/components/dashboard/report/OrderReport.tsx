@@ -1,5 +1,5 @@
 // components/OrderReport.tsx
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 
 import {
   TableContainer,
@@ -22,8 +22,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import useOrderReport from '@/actions/backend/orders/useOrderReport';
 import PickersRange from './PickersRange';
-import formatThaiDateTime from '@/components/global/functions/formatThaiDateTime';
-
+import type { DailyReport, OrderDetail } from '@/actions/backend/orders/useOrderReport';
 
 const OrderReport = () => {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([new Date(), new Date()]);
@@ -32,32 +31,12 @@ const OrderReport = () => {
     setDateRange(dates);
   }, []);
 
-  const { data, isLoading, error, refetch } = useOrderReport(dateRange[0], dateRange[1]);
+  const { data, isLoading, error } = useOrderReport(dateRange[0], dateRange[1]);
 
-  useEffect(() => {
-    if (dateRange[0] && dateRange[1]) {
-      refetch();
-    }
-  }, [dateRange, refetch]);
-
-  // Format number with commas and decimals
   const formatNumber = (num: number) => {
     return num.toLocaleString('th-TH', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
-    });
-  };
-
-  // Format date to Thai locale
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-
-
-    return date.toLocaleDateString('th-TH', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long'
     });
   };
 
@@ -74,7 +53,6 @@ const OrderReport = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Grid container spacing={3}>
-        {/* Date Picker Section */}
         <Grid item xs={12}>
           <PickersRange
             value={dateRange}
@@ -90,7 +68,6 @@ const OrderReport = () => {
           </Grid>
         ) : data ? (
           <>
-            {/* Summary Cards */}
             <Grid item xs={12}>
               <Card>
                 <CardContent>
@@ -138,9 +115,8 @@ const OrderReport = () => {
               </Card>
             </Grid>
 
-            {/* Daily Reports */}
             <Grid item xs={12}>
-              {data.dailyReports.map((daily) => (
+              {data.dailyReports.map((daily: DailyReport) => (
                 <Accordion key={daily.date} defaultExpanded={true}>
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
@@ -153,7 +129,7 @@ const OrderReport = () => {
                     <Grid container alignItems="center" spacing={2}>
                       <Grid item xs={12} md={4}>
                         <Typography variant="subtitle1" fontWeight="medium">
-                          {formatDate(daily.date)}
+                          {daily.date}
                         </Typography>
                       </Grid>
                       <Grid item xs={6} md={4}>
@@ -183,9 +159,9 @@ const OrderReport = () => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {daily.orders.map((order) => (
+                          {daily.orders.map((order: OrderDetail) => (
                             <TableRow key={order.orderId} hover>
-                              <TableCell>{formatThaiDateTime(order.createdAt)}</TableCell>
+                              <TableCell>{order.createdAt}</TableCell>
                               <TableCell>{order.orderId}</TableCell>
                               <TableCell>{order.customerName}</TableCell>
                               <TableCell align="right">{formatNumber(order.shippingCost)}</TableCell>

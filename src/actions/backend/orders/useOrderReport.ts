@@ -1,6 +1,5 @@
 // hooks/useOrderReport.ts
 import { useQuery } from "@tanstack/react-query";
-import { startOfDay, endOfDay } from 'date-fns';
 
 interface OrderDetail {
   orderId: string;
@@ -43,36 +42,35 @@ const useOrderReport = (startDate: Date | null, endDate: Date | null) => {
     queryKey: ['orderReport', startDate?.toISOString(), endDate?.toISOString()],
     queryFn: async () => {
       if (!startDate || !endDate) {
-        throw new Error('Start date and end date are required');
+        throw new Error('Date range is required');
       }
 
-      // แปลงวันที่ให้เป็นช่วงเต็มวัน
-      const start = startOfDay(startDate);
-      const end = endOfDay(endDate);
+      // ปรับเวลาให้ครอบคลุมทั้งวัน
+      const start = new Date(startDate);
+
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date(endDate);
+
+      end.setHours(23, 59, 59, 999);
 
       const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
       const url = `${baseUrl}/api/orders/report?startDate=${start.toISOString()}&endDate=${end.toISOString()}`;
 
-      try {
-        const response = await fetch(url);
+      console.log('Fetching report with date range:', {
+        start: start.toISOString(),
+        end: end.toISOString()
+      });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch report');
-        }
+      const response = await fetch(url);
 
-        const data: ReportResponse = await response.json();
-
-
-        return data;
-      } catch (error) {
-        console.error('Report fetch error:', error);
-        throw error instanceof Error ? error : new Error('Failed to fetch report');
+      if (!response.ok) {
+        throw new Error('Failed to fetch report');
       }
+
+      return response.json();
     },
-    enabled: Boolean(startDate) && Boolean(endDate),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
+    enabled: Boolean(startDate && endDate)
   });
 };
 
