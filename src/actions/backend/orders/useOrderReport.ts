@@ -1,5 +1,6 @@
 // hooks/useOrderReport.ts
 import { useQuery } from "@tanstack/react-query";
+import { startOfDay, endOfDay } from 'date-fns';
 
 interface OrderDetail {
   orderId: string;
@@ -45,8 +46,12 @@ const useOrderReport = (startDate: Date | null, endDate: Date | null) => {
         throw new Error('Start date and end date are required');
       }
 
+      // แปลงวันที่ให้เป็นช่วงเต็มวัน
+      const start = startOfDay(startDate);
+      const end = endOfDay(endDate);
+
       const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL;
-      const url = `${baseUrl}/api/orders/report?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
+      const url = `${baseUrl}/api/orders/report?startDate=${start.toISOString()}&endDate=${end.toISOString()}`;
 
       try {
         const response = await fetch(url);
@@ -65,7 +70,7 @@ const useOrderReport = (startDate: Date | null, endDate: Date | null) => {
       }
     },
     enabled: Boolean(startDate) && Boolean(endDate),
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 5 * 60 * 1000,
     retry: 2,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
   });
