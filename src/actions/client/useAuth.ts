@@ -4,7 +4,7 @@ import { useConfigStore } from '@/stores/configStore';
 import { useClientStores } from '@/stores/authStore';
 import type { TypeClient } from '@/types/clientTypes';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'https://b01.ngrok.dev';
+const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:8000';
 
 export const useAuth = () => {
   const [isInitialized, setIsInitialized] = useState(false);

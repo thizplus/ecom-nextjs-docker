@@ -76,10 +76,31 @@ const MyOrders = ({ profile, priceId }: propsMyOrders) => {
             <div className="font-bold mb-2">เลขที่คำสั่งซื้อ</div>
             {orders.map((order) => (
               <div key={order.orderId} className="border-b py-2 flex justify-between">
-                <div className=' leading-none'>
+                <div className='leading-none'>
                   <p className='text-sm font-bold leading-none block'>{order.orderId}</p>
-                  <p className={`text-sm font-bold leading-none ${getStatusColor(order.payment.status)}`}>{order.payment.status}</p>
+                  <p className={`text-sm font-bold leading-none ${getStatusColor(order.payment.status)}`}>
+                    {order.payment.status}
+                  </p>
                   <p className='text-xs'>{formatThaiDateTime(order.createdAt.toString())}</p>
+
+                  {/* เพิ่มส่วนแสดง tracking info */}
+                  {order.payment.status === 'success' && order.shippingInfo.trackingNo && (
+                    <div className='mt-1 space-y-0.5'>
+                      <p className='text-xs'>
+                        <span className='font-semibold'>เลขพัสดุ:</span> {order.shippingInfo.trackingNo}
+                      </p>
+                      {order.shippingInfo.shippingChannel && (
+                        <p className='text-xs'>
+                          <span className='font-semibold'>ขนส่ง:</span> {order.shippingInfo.shippingChannel}
+                        </p>
+                      )}
+                      {order.shippingInfo.trackingUpdateAt && (
+                        <p className='text-xs text-gray-500'>
+                          อัพเดทเมื่อ: {formatThaiDateTime(order.shippingInfo.trackingUpdateAt.toString())}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className='flex gap-2'>
                   <OrderDetail order={order} />

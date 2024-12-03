@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 import type { TypeClient } from '@/types/clientTypes';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'https://b01.ngrok.dev';
+const API_BASE_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:8000';
 
 interface ClientState {
   isLoggedIn: boolean;

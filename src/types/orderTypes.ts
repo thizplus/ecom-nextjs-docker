@@ -20,6 +20,11 @@ export interface ShippingInfo {
   province: string;
   zipcode: string;
   isDefault: boolean;
+
+  // เพิ่ม tracking fields
+  trackingNo?: string;
+  shippingChannel?: string;
+  trackingUpdateAt?: string | Date;
 }
 
 export interface PaymentSlip {
@@ -30,7 +35,7 @@ export interface PaymentSlip {
 }
 
 export interface Payment {
-  status: 'pending' | 'success' | 'failed';
+  status: 'pending' | 'success' | 'cancelled';
   amount: number;
   slip: PaymentSlip[];
 }
