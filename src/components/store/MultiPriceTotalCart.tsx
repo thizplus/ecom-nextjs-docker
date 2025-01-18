@@ -18,7 +18,8 @@ import { formatNumber } from '@/components/global/functions/numberFormat';
 import ShippingInfo from '@/components/global/shipping/shippingInfo';
 import actionCreateOrder from '@/actions/backend/orders/actionOrder';
 
-//import { sendLineNotification } from '@/actions/global/lineNotification';
+import { sendLineNotification } from '@/actions/global/lineNotification';
+
 //import { sendLineFlexMessage } from '@/actions/global/lineFlexMessage';
 import { sendOrderToZort } from '@/actions/zortout/actionZortout';
 import type { TypeOrder } from '@/types/orderTypes';
@@ -244,10 +245,13 @@ const MultiPriceTotalCart: React.FC = () => {
 
       actionCreateOrder(orderData);
 
-      // await sendLineNotification(orderData);
-      //await sendLineFlexMessage(orderData);
-
       const res = await sendOrderToZort(orderData);
+
+      await sendLineNotification(orderData);
+
+      //  await sendLineFlexMessage(orderData);
+
+
 
       setSnackbar({ open: true, message: 'สร้างคำสั่งซื้อสำเร็จ', severity: 'success' });
       handleClose();
