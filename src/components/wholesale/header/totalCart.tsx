@@ -18,8 +18,9 @@ import { formatNumber } from '@/components/global/functions/numberFormat';
 import { useCartChanges } from '../header/useCartChanges';
 import ShippingInfo from '@/components/global/shipping/shippingInfo';
 import actionCreateOrder from '@/actions/backend/orders/actionOrder';
-import { sendLineNotification } from '@/actions/global/lineNotification';
-import { sendLineFlexMessage } from '@/actions/global/lineFlexMessage';
+
+//import { sendLineNotification } from '@/actions/global/lineNotification';
+//import { sendLineFlexMessage } from '@/actions/global/lineFlexMessage';
 import { sendOrderToZort } from '@/actions/zortout/actionZortout';
 import type { TypeOrder } from '@/types/orderTypes';
 import Payment from '../../global/header/payment';
@@ -208,8 +209,9 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
       console.log('Created Order:', createdOrder);
 
       console.log('Order data:', orderData);
-      await sendLineNotification(orderData);
-      await sendLineFlexMessage(orderData);
+
+      // await sendLineNotification(orderData);
+      //await sendLineFlexMessage(orderData);
 
       const res = await sendOrderToZort(orderData);
 
