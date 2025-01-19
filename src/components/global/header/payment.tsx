@@ -5,13 +5,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-
 import Alert from '@mui/material/Alert';
 
 import type { TypeOrder } from '@/types/orderTypes';
 import { formatNumber } from '@/components/global/functions/numberFormat';
 import UploadSlip from './uploadSlip';
 import BtnVoidOrder from './voidOrder';
+import CountdownTimer from '@/components/global/CountdownTimer';
 
 interface PaymentProps {
   paymentData: TypeOrder;
@@ -24,6 +24,7 @@ interface PaymentProps {
 const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdatePayment, qr }) => {
   const [isFullyPaid, setIsFullyPaid] = useState(false);
   const [currentPayment, setCurrentPayment] = useState(paymentData.payment);
+  const [isExpired, setIsExpired] = useState(false);
 
   useEffect(() => {
     if (currentPayment.amount >= paymentData.netTotal) {
@@ -33,10 +34,15 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
         // onClose();
       }, 3000);
 
-
       return () => clearTimeout(timer);
     }
   }, [currentPayment, paymentData.netTotal, onClose]);
+
+  useEffect(() => {
+    if (isExpired) {
+      onClose();
+    }
+  }, [isExpired, onClose]);
 
   const handleClose = () => {
     onClose();
@@ -50,8 +56,10 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
   const remainingAmount = Math.max(0, paymentData.netTotal - currentPayment.amount);
 
   const handleVoidSuccess = () => {
-    onClose();  // Close the Payment dialog
+    onClose();
   };
+
+  if (!onOpen) return null;
 
   return (
     <Dialog
@@ -69,9 +77,16 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
     >
       <DialogTitle>ชำระเงิน</DialogTitle>
       <DialogContent>
-        <div className='block'>
-
-
+        <div className="block">
+          <div className="mb-4">
+            <CountdownTimer
+              expireTime={new Date(paymentData.expire)}
+              onExpire={() => {
+                setIsExpired(true);
+              }}
+              isActive={!isFullyPaid}
+            />
+          </div>
 
           <div className='grid grid-cols-2'>
             <p>หมายเลขคำสั่งซื้อ:</p><p className='text-right font-bold'>{paymentData.orderId}</p>
@@ -82,23 +97,22 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
 
           <div className='grid grid-cols-3 gap-2 p-2 border-dashed border rounded-sm mt-2'>
             <div className='block text-center leading-none'>
-              <p className='font-bold text-xl'>{formatNumber(paymentData.netTotal)}฿</p> <p>รวม</p>
+              <p className='font-bold text-xl'>{formatNumber(paymentData.netTotal)}฿</p>
+              <p>รวม</p>
             </div>
 
             <div className='block text-center leading-none text-green-600'>
-              <p className='font-bold text-xl '>{formatNumber(currentPayment.amount)}฿</p> <p>ชำระแล้ว</p>
+              <p className='font-bold text-xl '>{formatNumber(currentPayment.amount)}฿</p>
+              <p>ชำระแล้ว</p>
             </div>
             <div className='block text-center leading-none text-red-600'>
-              <p className='font-bold text-xl '>{formatNumber(remainingAmount)}฿</p><p>ค้างชำระ</p>
+              <p className='font-bold text-xl '>{formatNumber(remainingAmount)}฿</p>
+              <p>ค้างชำระ</p>
             </div>
           </div>
-
-
-
-
         </div>
 
-        {!isFullyPaid && (
+        {!isFullyPaid && !isExpired && (
           <UploadSlip
             order={paymentData}
             onPaymentUpdate={handlePaymentUpdate}
@@ -106,28 +120,37 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
           />
         )}
 
-        {qr &&
+        {qr && !isExpired && (
           <div className='mb-2'>
             <p className='text-center'>กรุณาชำระเงินที่บัญชีด้านล่างและแนบสลิป</p>
-            <p className='text-center text-sm text-error'>หากสลิปของคุณไม่มี QR CODE ระบบจะไม่สามารถตรวจสอบยอดได้ กรุณาส่งหลักฐานให้แอดมินยืนยันในแชท</p>
-            <img src={qr} alt='' className=' w-full' />
+            <p className='text-center text-sm text-error'>
+              หากสลิปของคุณไม่มี QR CODE ระบบจะไม่สามารถตรวจสอบยอดได้ กรุณาส่งหลักฐานให้แอดมินยืนยันในแชท
+            </p>
+            <img src={qr} alt='' className='w-full' />
           </div>
-        }
+        )}
 
         {isFullyPaid && (
-          <Alert severity='success' className='mt-4'>การชำระเงินของคุณเสร็จสมบูรณ์</Alert>
+          <Alert severity='success' className='mt-4'>
+            การชำระเงินของคุณเสร็จสมบูรณ์
+          </Alert>
+        )}
 
+        {isExpired && !isFullyPaid && (
+          <Alert severity='error' className='mt-4'>
+            หมดเวลาชำระเงิน กรุณาทำรายการใหม่
+          </Alert>
         )}
       </DialogContent>
+
       <DialogActions>
-        {!isFullyPaid ? (
+        {!isFullyPaid && !isExpired ? (
           <BtnVoidOrder orderId={paymentData.orderId} onVoidSuccess={handleVoidSuccess} />
         ) : (
           <Button onClick={handleClose} color="error" variant='outlined'>
             ปิด
           </Button>
         )}
-
       </DialogActions>
     </Dialog>
   );

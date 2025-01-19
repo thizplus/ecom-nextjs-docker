@@ -26,7 +26,6 @@ import type { TypeOrder } from '@/types/orderTypes';
 import Payment from '../global/header/payment';
 import { useMultiPriceUpdate } from '@/actions/store/useMultiPriceUpdate';
 import { checkZortStock } from '@/actions/backend/orders/checkZortStock';
-import CountdownTimer from '../global/CountdownTimer';
 
 const MultiPriceTotalCart: React.FC = () => {
   const {
@@ -48,8 +47,6 @@ const MultiPriceTotalCart: React.FC = () => {
   const [payment, setPayment] = useState<TypeOrder | undefined>(undefined);
   const [localTotalAmount, setLocalTotalAmount] = useState<number>(0);
   const [localBaseTotalCart, setLocalBaseTotalCart] = useState<number>(0);
-
-  const [isExpired, setIsExpired] = useState<boolean>(false);
 
   const [insufficientStock, setInsufficientStock] = useState<Array<{
     name: string;
@@ -439,26 +436,6 @@ const MultiPriceTotalCart: React.FC = () => {
           onOpen={true}
           onUpdatePayment={handleUpdatePayment}
         />
-      )}
-
-      {payment && !isExpired && (
-        <>
-          <CountdownTimer
-            expireTime={new Date(payment.expire)} // แปลงเป็น Date object ตรงนี้
-            onExpire={() => {
-              setIsExpired(true);
-              setPayment(undefined);
-            }}
-            isActive={!!payment}
-          />
-          <Payment
-            paymentData={payment}
-            qr={config?.slipOK.qr_image}
-            onClose={handleCancelOrder}
-            onOpen={true}
-            onUpdatePayment={handleUpdatePayment}
-          />
-        </>
       )}
 
       <Snackbar

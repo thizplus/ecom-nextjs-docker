@@ -27,7 +27,6 @@ import type { TypeOrder } from '@/types/orderTypes';
 import Payment from '../../global/header/payment';
 import { usePriceUpdate } from '@/actions/wholesale/usePriceUpdate';
 import { checkZortStock } from '@/actions/backend/orders/checkZortStock';
-import CountdownTimer from '@/components/global/CountdownTimer';
 
 interface PropsTotalCart {
   priceId: string;
@@ -43,7 +42,7 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
   const [payment, setPayment] = useState<TypeOrder | undefined>(undefined);
   const { updateCartPrices } = usePriceUpdate(priceId);
 
-  const [isExpired, setIsExpired] = useState<boolean>(false);
+
 
   const [insufficientStock, setInsufficientStock] = useState<Array<{
     name: string;
@@ -396,24 +395,14 @@ const TotalCart: React.FC<PropsTotalCart> = ({ priceId }) => {
         </DialogActions>
       </Dialog>
 
-      {payment && !isExpired && (
-        <>
-          <CountdownTimer
-            expireTime={new Date(payment.expire)} // แปลงเป็น Date object ตรงนี้
-            onExpire={() => {
-              setIsExpired(true);
-              setPayment(undefined);
-            }}
-            isActive={!!payment}
-          />
-          <Payment
-            paymentData={payment}
-            qr={config?.slipOK.qr_image}
-            onClose={handleCancelOrder}
-            onOpen={true}
-            onUpdatePayment={handleUpdatePayment}
-          />
-        </>
+      {payment && (
+        <Payment
+          paymentData={payment}
+          qr={config?.slipOK.qr_image}
+          onClose={handleCancelOrder}
+          onOpen={true}
+          onUpdatePayment={handleUpdatePayment}
+        />
       )}
 
 
