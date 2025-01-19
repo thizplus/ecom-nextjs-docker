@@ -41,7 +41,6 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
 
     if (difference <= 0) {
       setIsExpired(true);
-      onExpire();
 
       return { minutes: 0, seconds: 0 };
     }
@@ -50,7 +49,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       minutes: Math.floor((difference / 1000 / 60) % 60),
       seconds: Math.floor((difference / 1000) % 60)
     };
-  }, [expireTime, onExpire]);
+  }, [expireTime]);
 
   useEffect(() => {
     if (!isActive) return;
@@ -68,9 +67,18 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
     return () => clearInterval(timer);
   }, [isActive, calculateTimeLeft]);
 
+  useEffect(() => {
+    if (isExpired) {
+      const timer = setTimeout(() => {
+        onExpire();
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isExpired, onExpire]);
+
   if (!isActive) return null;
 
-  // สไตล์ 1: แบบ Chip ด้านบน
   return (
     <Box sx={{ mt: 2, mb: 2 }}>
       {isExpired ? (
@@ -124,57 +132,6 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
       )}
     </Box>
   );
-
-  /* สไตล์ 2: แบบ Paper แถบด้านบน
-  return (
-    <Box sx={{ mt: 2, mb: 2 }}>
-      {isExpired ? (
-        <Paper
-          elevation={0}
-          sx={{
-            p: 1.5,
-            bgcolor: '#FEE2E2',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 1
-          }}
-        >
-          <ErrorOutlineIcon color="error" />
-          <Typography color="error">
-            หมดเวลาชำระเงิน กรุณาทำรายการใหม่
-          </Typography>
-        </Paper>
-      ) : (
-        <Paper
-          elevation={1}
-          sx={{
-            p: 1.5,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 1
-          }}
-        >
-          <AccessTimeIcon color="action" />
-          <Typography>
-            เวลาที่เหลือในการชำระเงิน:{' '}
-            <Box
-              component="span"
-              sx={{
-                fontWeight: 'bold',
-                color: timeLeft.minutes < 5 ? '#EF4444' : 'inherit'
-              }}
-            >
-              {String(timeLeft.minutes).padStart(2, '0')}:
-              {String(timeLeft.seconds).padStart(2, '0')}
-            </Box>
-          </Typography>
-        </Paper>
-      )}
-    </Box>
-  );
-  */
 };
 
 export default CountdownTimer;

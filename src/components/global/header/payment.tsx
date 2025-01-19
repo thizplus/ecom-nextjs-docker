@@ -29,14 +29,8 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
   useEffect(() => {
     if (currentPayment.amount >= paymentData.netTotal) {
       setIsFullyPaid(true);
-
-      const timer = setTimeout(() => {
-        // onClose();
-      }, 3000);
-
-      return () => clearTimeout(timer);
     }
-  }, [currentPayment, paymentData.netTotal, onClose]);
+  }, [currentPayment, paymentData.netTotal]);
 
   useEffect(() => {
     if (isExpired) {
@@ -63,7 +57,7 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
 
   return (
     <Dialog
-      open={onOpen}
+      open={onOpen && !isExpired}
       disableEscapeKeyDown
       aria-labelledby='alert-dialog-title'
       aria-describedby='alert-dialog-description'
@@ -89,10 +83,14 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
           </div>
 
           <div className='grid grid-cols-2'>
-            <p>หมายเลขคำสั่งซื้อ:</p><p className='text-right font-bold'>{paymentData.orderId}</p>
+            <p>หมายเลขคำสั่งซื้อ:</p>
+            <p className='text-right font-bold'>{paymentData.orderId}</p>
             <p color={isFullyPaid ? 'success.main' : 'warning.main'}>
               สถานะการชำระเงิน:
-            </p><p className='text-right font-bold'>{isFullyPaid ? 'ชำระเงินครบแล้ว' : 'รอการชำระเงิน'}</p>
+            </p>
+            <p className='text-right font-bold'>
+              {isFullyPaid ? 'ชำระเงินครบแล้ว' : 'รอการชำระเงิน'}
+            </p>
           </div>
 
           <div className='grid grid-cols-3 gap-2 p-2 border-dashed border rounded-sm mt-2'>
@@ -100,7 +98,6 @@ const Payment: React.FC<PaymentProps> = ({ paymentData, onClose, onOpen, onUpdat
               <p className='font-bold text-xl'>{formatNumber(paymentData.netTotal)}฿</p>
               <p>รวม</p>
             </div>
-
             <div className='block text-center leading-none text-green-600'>
               <p className='font-bold text-xl '>{formatNumber(currentPayment.amount)}฿</p>
               <p>ชำระแล้ว</p>
