@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Chip from '@mui/material/Chip';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+
 interface CountdownTimerProps {
-  expireTime: Date | string;  // เพิ่ม Date type
+  expireTime: Date | string;
   onExpire: () => void;
   isActive?: boolean;
 }
@@ -26,8 +33,6 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
   const calculateTimeLeft = useCallback(() => {
     const now = new Date().getTime();
 
-
-    // แปลง expireTime เป็น Date object ถ้าเป็น string
     const expireDate = typeof expireTime === 'string'
       ? new Date(expireTime).getTime()
       : expireTime.getTime();
@@ -65,23 +70,111 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({
 
   if (!isActive) return null;
 
+  // สไตล์ 1: แบบ Chip ด้านบน
   return (
-    <div className="text-center mt-4">
+    <Box sx={{ mt: 2, mb: 2 }}>
       {isExpired ? (
-        <p className="text-red-500 font-semibold">
-          หมดเวลาชำระเงิน กรุณาทำรายการใหม่
-        </p>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 1,
+            bgcolor: '#FEE2E2',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 1
+          }}
+        >
+          <ErrorOutlineIcon color="error" />
+          <Typography color="error">
+            หมดเวลาชำระเงิน กรุณาทำรายการใหม่
+          </Typography>
+        </Paper>
       ) : (
-        <p>
-          <span>เวลาที่เหลือในการชำระเงิน: </span>
-          <span className="font-semibold">
-            {String(timeLeft.minutes).padStart(2, '0')}:
-            {String(timeLeft.seconds).padStart(2, '0')}
-          </span>
-        </p>
+        <Box sx={{ textAlign: 'center' }}>
+          <Chip
+            icon={<AccessTimeIcon />}
+            label={
+              <Box component="span" sx={{ px: 1 }}>
+                <Typography component="span" sx={{ fontSize: '0.9rem' }}>
+                  เวลาที่เหลือในการชำระเงิน:{' '}
+                </Typography>
+                <Typography
+                  component="span"
+                  sx={{
+                    fontWeight: 'bold',
+                    fontSize: '1.1rem',
+                    color: timeLeft.minutes < 5 ? '#EF4444' : 'inherit'
+                  }}
+                >
+                  {String(timeLeft.minutes).padStart(2, '0')}:
+                  {String(timeLeft.seconds).padStart(2, '0')}
+                </Typography>
+              </Box>
+            }
+            sx={{
+              py: 2,
+              bgcolor: 'background.paper',
+              '& .MuiChip-label': {
+                px: 2
+              }
+            }}
+          />
+        </Box>
       )}
-    </div>
+    </Box>
   );
+
+  /* สไตล์ 2: แบบ Paper แถบด้านบน
+  return (
+    <Box sx={{ mt: 2, mb: 2 }}>
+      {isExpired ? (
+        <Paper
+          elevation={0}
+          sx={{
+            p: 1.5,
+            bgcolor: '#FEE2E2',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 1
+          }}
+        >
+          <ErrorOutlineIcon color="error" />
+          <Typography color="error">
+            หมดเวลาชำระเงิน กรุณาทำรายการใหม่
+          </Typography>
+        </Paper>
+      ) : (
+        <Paper
+          elevation={1}
+          sx={{
+            p: 1.5,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 1
+          }}
+        >
+          <AccessTimeIcon color="action" />
+          <Typography>
+            เวลาที่เหลือในการชำระเงิน:{' '}
+            <Box
+              component="span"
+              sx={{
+                fontWeight: 'bold',
+                color: timeLeft.minutes < 5 ? '#EF4444' : 'inherit'
+              }}
+            >
+              {String(timeLeft.minutes).padStart(2, '0')}:
+              {String(timeLeft.seconds).padStart(2, '0')}
+            </Box>
+          </Typography>
+        </Paper>
+      )}
+    </Box>
+  );
+  */
 };
 
 export default CountdownTimer;
