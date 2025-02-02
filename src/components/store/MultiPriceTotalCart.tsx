@@ -20,7 +20,7 @@ import actionCreateOrder from '@/actions/backend/orders/actionOrder';
 
 import { sendLineNotification } from '@/actions/global/lineNotification';
 
-//import { sendLineFlexMessage } from '@/actions/global/lineFlexMessage';
+import { sendLineFlexMessage } from '@/actions/global/lineFlexMessage';
 import { sendOrderToZort } from '@/actions/zortout/actionZortout';
 import type { TypeOrder } from '@/types/orderTypes';
 import Payment from '../global/header/payment';
@@ -249,7 +249,7 @@ const MultiPriceTotalCart: React.FC = () => {
 
       await sendLineNotification(orderData);
 
-      //  await sendLineFlexMessage(orderData);
+      await sendLineFlexMessage(orderData);
 
 
 
